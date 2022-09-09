@@ -8,7 +8,7 @@ installing database server on Rasberry Pi
 # sudo pip3 install influxdb
 
 installing MQTT-broker
-sudo pip3 install paho-mqtt
+# sudo pip3 install paho-mqtt
 
-# starting service
+starting service
 # sudo service influxdb start
