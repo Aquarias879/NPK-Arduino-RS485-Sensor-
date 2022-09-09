@@ -1,6 +1,7 @@
-# NPK-Arduino-RS485-Sensor-
-# The Database is Influxdb
-# installing database server on Rasberry Pi
+
+'''NPK-Arduino-RS485-Sensor- 
+The Database is Influxdb
+installing database server on Rasberry Pi '''
 
 ## sudo apt install influxdb
 ## sudo apt install influxdb-client
