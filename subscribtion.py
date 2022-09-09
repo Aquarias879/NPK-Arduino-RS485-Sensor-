@@ -5,18 +5,16 @@ import paho.mqtt.client as mqtt
 from influxdb import InfluxDBClient
 import datetime
 
-INFLUXDB_ADDRESS = '203.64.131.98'
-INFLUXDB_USER = 'sam'
-INFLUXDB_PASSWORD = '12345678'
-INFLUXDB_DATABASE = 'SensorData'
+DB_USER = 'sam'
+DB_PASSWORD = '12345678'
+DATABASE_NAME = 'SensorData'
+IP_ADDRESS = '203.64.131.98'
+MQ_USER = 'admin'
+MQ_PASSWORD = '12345678'
+TOPIC = 'greenhouse/+/+'
+REGEX = 'greenhouse/([^/]+)/([^/]+)'
 
-MQTT_ADDRESS = '203.64.131.98'
-MQTT_USER = 'admin'
-MQTT_PASSWORD = '12345678'
-MQTT_TOPIC = 'greenhouse/+/+'
-MQTT_REGEX = 'greenhouse/([^/]+)/([^/]+)'
-
-influxdb_client = InfluxDBClient(INFLUXDB_ADDRESS, 8086, INFLUXDB_USER, INFLUXDB_PASSWORD, None)
+influxdb_client = InfluxDBClient(DB_ADDRESS, 8086, DB_USER, DB_PASSWORD, None)
 
 class SensorData(NamedTuple):
     device : str
@@ -25,10 +23,10 @@ class SensorData(NamedTuple):
 
 def on_connect(client, userdata, flags, rc):
     print('Connected with result code ' + str(rc))
-    client.subscribe(MQTT_TOPIC)
+    client.subscribe(TOPIC)
 
 def _parse_mqtt_message(topic, payload):
-    match = re.match(MQTT_REGEX, topic)
+    match = re.match(REGEX, topic)
     if match:
         device = match.group(1)
         measurement = match.group(2)
@@ -59,23 +57,23 @@ def on_message(client, userdata, msg):
 
 def _init_influxdb_database():
     databases = influxdb_client.get_list_database()
-    if len(list(filter(lambda x: x['name'] == INFLUXDB_DATABASE, databases))) == 0:
-        influxdb_client.create_database(INFLUXDB_DATABASE)
-    influxdb_client.switch_database(INFLUXDB_DATABASE)
+    if len(list(filter(lambda x: x['name'] == DATABASE_NAME, databases))) == 0:
+        influxdb_client.create_database(DATABASE_NAME)
+    influxdb_client.switch_database(DATABASE_NAME)
 
 def main():
     _init_influxdb_database()
 
     mqtt_client = mqtt.Client()
-    mqtt_client.username_pw_set(MQTT_USER, MQTT_PASSWORD)
+    mqtt_client.username_pw_set(MQ_USER, MQ_PASSWORD)
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
 
-    mqtt_client.connect(MQTT_ADDRESS, 1883)
+    mqtt_client.connect(ADDRESS, 1883)
     mqtt_client.loop_forever()
 
 
 if __name__ == '__main__':
-    print('MQTT to InfluxDB bridge')
+    print('Finished !!')
     main()
 
