@@ -24,7 +24,6 @@ class SensorData(NamedTuple):
     value: float
 
 def on_connect(client, userdata, flags, rc):
-    """ The callback for when the client receives a CONNACK response from the server."""
     print('Connected with result code ' + str(rc))
     client.subscribe(MQTT_TOPIC)
 
@@ -53,7 +52,6 @@ def _send_sensor_data_to_influxdb(sensor_data):
     influxdb_client.write_points(json_body)
 
 def on_message(client, userdata, msg):
-    """The callback for when a PUBLISH message is received from the server."""
     print(msg.topic + ' ' + str(msg.payload))
     sensor_data = _parse_mqtt_message(msg.topic, msg.payload.decode('utf-8'))
     if sensor_data is not None:
